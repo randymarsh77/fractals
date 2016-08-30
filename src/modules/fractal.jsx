@@ -63,6 +63,6 @@ export default class Fractal extends React.Component {
 	}
 
 	render () {
-		return <canvas ref="canvas" className="fill" style={{"height" : "100%", "width" : "100%"}}/>;
+		return <canvas ref="canvas" className="fill" />;
 	}
 }

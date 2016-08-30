@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import Fractal from './modules/fractal'
 import ZoomableViewport from './modules/zoomableviewport';
+import './styles.less';
 
 class App extends React.Component {
 
@@ -102,5 +103,5 @@ class App extends React.Component {
 }
 
 render((
-	<App className="fill" style={{"height" : "100%", "width" : "100%"}} />
+	<App className="fill" />
 ), document.getElementById('app'));

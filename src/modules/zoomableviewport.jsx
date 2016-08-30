@@ -90,7 +90,7 @@ export default class ZoomableViewport extends React.Component {
 
 	render () {
 		return (
-			<div ref="container" className="fill" onWheel={this.handleMouseWheel.bind(this)} style={{"height" : "100%", "width" : "100%"}}>
+			<div ref="container" className="fill" onWheel={this.handleMouseWheel.bind(this)}>
 				{this.props.children}
 			</div>
 		);

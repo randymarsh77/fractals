@@ -11,6 +11,9 @@ var HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
     inject: 'body'
 });
 
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var StyleTextPluginConfig = new ExtractTextPlugin('style.css', { allChunks: true });
+
 var config = {
   entry: APP_DIR + '/index.jsx',
 	resolve: {
@@ -27,14 +30,17 @@ var config = {
         include : APP_DIR,
         loader : 'babel'
       },
-      {
+			{
         test: /\.less$/,
 				include : APP_DIR,
-        loader: "style!css!autoprefixer!less"
+				loader: ExtractTextPlugin.extract("style?sourceMap", "css?sourceMap!autoprefixer?browsers=last 2 version!less")
       }
     ]
   },
-  plugins: [HtmlWebpackPluginConfig]
+  plugins: [
+		HtmlWebpackPluginConfig,
+		StyleTextPluginConfig
+	]
 };
 
 module.exports = config;
