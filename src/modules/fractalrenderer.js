@@ -5,7 +5,6 @@ export default class FractalRenderer {
 		return window.operative((parameters) => {
 
 			let { viewport, width, height, iterations } = parameters;
-			console.log('t', viewport);
 
 			let getPointForPixel = (n, width, height, viewport) => {
 				let { minX, minY, maxX, maxY } = viewport;
