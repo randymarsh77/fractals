@@ -48,16 +48,17 @@ export default class ControlPanel extends React.Component {
 	}
 
 	raiseChanged(newState) {
-		const { visible, interations, workers, viewport } = newState;
+		const { visible, iterations, workers, viewport, resolution } = newState;
 		const controlState = {
 			visible,
 			fractalParams: {
+				resolution,
 				iterations,
 				workers,
 				viewport,
 			},
 		};
-		this.props.onControlStateChanged(newState);
+		this.props.onControlStateChanged(controlState);
 	}
 
 	render() {
