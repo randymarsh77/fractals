@@ -1,7 +1,6 @@
 export default class RenderPool {
 
-	constructor(width, height, createRenderer) {
-		const threads = 4;
+	constructor(threads, width, height, createRenderer, onRenderStateChanged) {
 		const units = Math.sqrt(threads);
 
 		let w = Math.trunc(width / units);
@@ -22,6 +21,8 @@ export default class RenderPool {
 			}
 		}
 
+		this.renderTasks = 0;
+		this.onRenderStateChanged = onRenderStateChanged;
 		this.pool = pool;
 		this.size = {
 			width,
@@ -33,7 +34,9 @@ export default class RenderPool {
 	}
 
 	render(parameters, onPartialRender) {
+		const updateRendering = this.updateRenderingState.bind(this);
 		this.pool.forEach((x) => {
+			updateRendering(1);
 			let { bounds, render } = x;
 			let params = {
 				...parameters,
@@ -44,8 +47,25 @@ export default class RenderPool {
 			render(params)
 				.then((data) => {
 					onPartialRender(data, bounds);
+					updateRendering(-1);
 				});
 		});
+	}
+
+	updateRenderingState(modifier) {
+		if (this.renderTasks === 0) {
+			this.onRenderStateChanged({
+				rendering: true,
+			});
+		}
+
+		this.renderTasks += modifier;
+
+		if (this.renderTasks === 0) {
+			this.onRenderStateChanged({
+				rendering: false,
+			});
+		}
 	}
 
 	getViewportSlice(viewport, bounds) {
