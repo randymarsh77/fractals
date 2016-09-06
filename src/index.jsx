@@ -36,7 +36,6 @@ class App extends React.Component {
 			isWorking: false,
 			controlState: {
 				visible: true,
-				fractalParams,
 			},
 		});
 	}
@@ -124,11 +123,18 @@ class App extends React.Component {
 		});
 	}
 
-	handleControlStateChanged(controlState) {
-		const { fractalParams } = controlState;
+	handleFractalParamsChanged(fractalParamsDiff) {
+		let { fractalParams } = this.state;
+		console.log('new', Object.assign(fractalParams, fractalParamsDiff));
 		this.setState({
-			fractalParams,
-			controlState,
+			fractalParams: Object.assign(fractalParams, fractalParamsDiff),
+		});
+	}
+
+	handleControlStateChanged(controlStateDiff) {
+		let { controlState } = this.state;
+		this.setState({
+			controlState: Object.assign(controlState, controlStateDiff),
 		});
 	}
 
@@ -156,7 +162,11 @@ class App extends React.Component {
 					<CanvasRenderTarget resolution={this.state.fractalParams.resolution} dataSource={this.state.fractal} />
 				</ZoomableViewport>
 				{ this.state.isWorking ? <IsWorkingIndicator /> : null }
-				<ControlPanel controlState={this.state.controlState} onControlStateChanged={this.handleControlStateChanged.bind(this)} />
+				<ControlPanel
+					controlState={this.state.controlState}
+					onControlStateChanged={this.handleControlStateChanged.bind(this)}
+					fractalParams={this.state.fractalParams}
+					onFractalParamsChanged={this.handleFractalParamsChanged.bind(this)} />
 			</div>
 		);
   }

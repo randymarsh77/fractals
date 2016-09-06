@@ -13,8 +13,8 @@ export default class ControlPanel extends React.Component {
 	}
 
 	setStateFromProps(props) {
-		const { controlState } = this.props;
-		const { visible, fractalParams } = controlState;
+		const { controlState, fractalParams } = this.props;
+		const { visible } = controlState;
 		this.setState({
 			visible,
 			...fractalParams,
@@ -25,40 +25,21 @@ export default class ControlPanel extends React.Component {
 		const { visible } = this.state;
 		let newVisible = !visible;
 		let newState = {
-			...this.state,
 			visible: newVisible,
 		};
-		this.raiseChanged(newState);
+		this.props.onControlStateChanged(newState);
 	}
 
 	onIterationsValueChanged(e) {
-		let newState = {
-			...this.state,
+		this.props.onFractalParamsChanged({
 			iterations: Number(e.target.value),
-		};
-		this.raiseChanged(newState);
+		});
 	}
 
 	onWorkersValueChanged(e) {
-		let newState = {
-			...this.state,
-			workers: Math.max(32, Math.min(1, Number(e.target.value))),
-		};
-		this.raiseChanged(newState);
-	}
-
-	raiseChanged(newState) {
-		const { visible, iterations, workers, viewport, resolution } = newState;
-		const controlState = {
-			visible,
-			fractalParams: {
-				resolution,
-				iterations,
-				workers,
-				viewport,
-			},
-		};
-		this.props.onControlStateChanged(controlState);
+		this.props.onFractalParamsChanged({
+			workers: Math.min(128, Math.max(1, Number(e.target.value))),
+		});
 	}
 
 	render() {
