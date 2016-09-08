@@ -115,17 +115,17 @@ class App extends React.Component {
 	}
 
 	setViewport(viewport) {
+		const { fractalParams } = this.state;
 		this.setState({
 			fractalParams: {
-				...this.state.fractalParams,
-				viewport,
+				...fractalParams,
+				viewport: this.adjustViewportForResolution(viewport, fractalParams.resolution),
 			},
 		});
 	}
 
 	handleFractalParamsChanged(fractalParamsDiff) {
 		let { fractalParams } = this.state;
-		console.log('new', Object.assign(fractalParams, fractalParamsDiff));
 		this.setState({
 			fractalParams: Object.assign(fractalParams, fractalParamsDiff),
 		});

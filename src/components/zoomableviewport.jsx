@@ -27,6 +27,73 @@ export default class ZoomableViewport extends React.Component {
 		return ((n = +n) || 1 / n) < 0;
 	}
 
+	handleMouseDown(e) {
+		const { dragState } = this.state;
+		if (dragState) {
+			return;
+		}
+
+		this.setState({
+			dragState: {
+				origin: {
+					x: e.pageX,
+					y: e.pageY,
+				},
+				style: {
+					left:e.pageX,
+					top: e.pageY,
+					width: 0,
+					height: 0,
+				},
+			},
+		});
+	}
+
+	handleMouseMove(e) {
+		const { dragState } = this.state;
+		if (!dragState) {
+			return;
+		}
+		const { origin } = dragState;
+		this.setState({
+			dragState: {
+				origin,
+				style: {
+					left: Math.min(e.pageX, origin.x),
+					top: Math.min(e.pageY, origin.y),
+					width: Math.abs(e.pageX - origin.x),
+					height: Math.abs(e.pageY - origin.y),
+				},
+			},
+		});
+	}
+
+	handleMouseUp(e) {
+		const { dragState, viewport, resolution } = this.state;
+		if (!dragState) {
+			return;
+		}
+
+		this.setState({
+			dragState: undefined,
+		});
+
+		const { left, top, width, height } = dragState.style;
+		const { minX, minY, maxX, maxY } = viewport;
+		const newWidth = (maxX - minX) * (width / resolution.width);
+		const newHeight = (maxY - minY) * ( height / resolution.height);
+
+		const newMinX = minX + ((left / resolution.width) * (maxX - minX));
+		const newMaxY = maxY - ((top / resolution.height) * (maxY - minY));
+
+		this.props.onViewportChanged({
+			minX: newMinX,
+			maxX: newMinX + newWidth,
+			minY: newMaxY - newHeight,
+			maxY: newMaxY,
+		});
+	}
+
 	handleMouseWheel(e) {
 		let ZOOM_STEP = .01;
 		e.preventDefault();
@@ -89,9 +156,17 @@ export default class ZoomableViewport extends React.Component {
 	}
 
 	render () {
+		const { dragState } = this.state;
 		return (
-			<div ref="container" className="fill" onWheel={this.handleMouseWheel.bind(this)}>
+			<div
+				ref="container"
+				className="fill"
+				onWheel={this.handleMouseWheel.bind(this)}
+				onMouseDown={this.handleMouseDown.bind(this)}
+				onMouseMove={this.handleMouseMove.bind(this)}
+				onMouseUp={this.handleMouseUp.bind(this)}>
 				{this.props.children}
+				{ dragState ? <div className="dragBox" style={dragState.style} /> : null }
 			</div>
 		);
 	}
