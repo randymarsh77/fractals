@@ -6,27 +6,32 @@ export default class Fractal {
 
 	constructor(type, params, onRenderStateChanged) {
 		const { logic } = type;
-		const { resolution, workers } = params;
-		const { width, height } = resolution;
 		this.observers = [];
-		this.createRenderPool = (workers, width, height) => (new RenderPool(workers, width, height, (w, h) => FractalRenderer.CreateRenderer(logic), onRenderStateChanged)),
+		this.createRenderPool = (workers, width, height) =>
+			(new RenderPool(workers, width, height,
+				() => FractalRenderer.CreateRenderer(logic), onRenderStateChanged));
 		this.updateParameters(params);
 	}
 
 	updateParameters(params) {
-		const { resolution: oldResolution, viewport: oldViewport, iterations: oldIterations, workers: oldWorkers } = (this.parameters || {});
+		const {
+			resolution: oldResolution,
+			viewport: oldViewport,
+			iterations: oldIterations,
+			workers: oldWorkers,
+		} = (this.parameters || {});
 		const { width: oldWidth, height: oldHeight } = (oldResolution || {});
 		const newParams = Object.assign((this.parameters || {}), params);
-		let { resolution, viewport, iterations, workers } = newParams;
-		let { width, height } = resolution;
+		const { resolution, viewport, iterations, workers } = newParams;
+		const { width, height } = resolution;
 
 		let paramsChanged = false;
-		if (oldWidth != width || oldHeight != height || oldWorkers != workers) {
+		if (oldWidth !== width || oldHeight !== height || oldWorkers !== workers) {
 			paramsChanged = true;
 			this.renderpool = this.createRenderPool(workers, width, height);
 		}
 
-		paramsChanged = paramsChanged || oldViewport != viewport || oldIterations != iterations;
+		paramsChanged = paramsChanged || oldViewport !== viewport || oldIterations !== iterations;
 		this.parameters = newParams;
 
 		if (paramsChanged) {
@@ -40,7 +45,7 @@ export default class Fractal {
 		obj.observers.push(callback);
 		return {
 			dispose: () => {
-				let i = obj.observers.indexOf(callback);
+				const i = obj.observers.indexOf(callback);
 				obj.observers.splice(i, 1);
 			},
 		};
@@ -55,22 +60,22 @@ export default class Fractal {
 	}
 
 	render(canvas) {
-
 		const { cache, renderpool, parameters } = this;
-		const { width, height, viewport, iterations } = parameters;
-		let ctx = canvas.getContext('2d');
+		const { viewport, iterations } = parameters;
+		const ctx = canvas.getContext('2d');
 
-		const cacheKey = cache.createKey(viewport);
-		let cachedData = cache.getAvailableData(cacheKey);
+		const cacheKey = RenderCache.CreateKey(viewport);
+		const cachedData = cache.getAvailableData(cacheKey);
 		if (cachedData) {
-			for (data in cachedData) {
+			for (let i = 0; i < cachedData.length; i++) {
+				const data = cachedData[i];
 				const { x, y, imageData } = data;
 				ctx.putImageData(imageData, x, y);
-			};
+			}
 		} else {
 			renderpool.render({ viewport, iterations }, (data, bounds) => {
-				let { x, y, width: bWidth, height: bHeight } = bounds;
-				let imageData = ctx.createImageData(bWidth, bHeight);
+				const { x, y, width: bWidth, height: bHeight } = bounds;
+				const imageData = ctx.createImageData(bWidth, bHeight);
 				for (let i = 0; i < bWidth * bHeight * 4; i++) {
 					imageData.data[i] = data[i];
 				}

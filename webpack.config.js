@@ -13,6 +13,11 @@ var HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var StyleTextPluginConfig = new ExtractTextPlugin('style.css', { allChunks: true });
+var MinifyPlugin = new webpack.optimize.UglifyJsPlugin({
+	compress:{
+		warnings: true
+	}
+});
 
 var config = {
   entry: APP_DIR + '/index.jsx',
@@ -39,7 +44,8 @@ var config = {
   },
   plugins: [
 		HtmlWebpackPluginConfig,
-		StyleTextPluginConfig
+		StyleTextPluginConfig,
+		MinifyPlugin,
 	]
 };
 

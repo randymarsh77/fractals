@@ -4,29 +4,28 @@ export default class FractalRenderer {
 
 	static CreateRenderer(logic) {
 		const { getColorForPoint } = logic;
-		return window.operative({
+		return operative({
 			getColorForPoint,
 			render: (parameters) => {
-
 				const getPointForPixel = (n, width, height, viewport) => {
-					let { minX, minY, maxX, maxY } = viewport;
-					let ax = Math.ceil(n % width);
-					let ay = Math.ceil(n / width);
+					const { minX, minY, maxX, maxY } = viewport;
+					const ax = Math.ceil(n % width);
+					const ay = Math.ceil(n / width);
 					return {
-						x: minX + ax * ((maxX - minX) / width),
-						y: maxY - ay * ((maxY - minY) / height),
+						x: minX + (ax * ((maxX - minX) / width)),
+						y: maxY - (ay * ((maxY - minY) / height)),
 					};
 				};
 
 				const { viewport, width, height, iterations } = parameters;
 
-				let data = new Array(width * height * 4);
+				const data = new Array(width * height * 4);
 				for (let row = 0; row < height; row++) {
 					for (let column = 0; column < width; column++) {
-						let n = row * width + column;
-						let { x, y } = getPointForPixel(n, width, height, viewport);
-						let color = getColorForPoint(x, y, iterations);
-						let byteOffset = n * 4;
+						const n = (row * width) + column;
+						const { x, y } = getPointForPixel(n, width, height, viewport);
+						const color = getColorForPoint(x, y, iterations);
+						const byteOffset = n * 4;
 						data[byteOffset + 0] = color[0];
 						data[byteOffset + 1] = color[1];
 						data[byteOffset + 2] = color[2];

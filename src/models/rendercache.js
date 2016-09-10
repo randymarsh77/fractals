@@ -4,7 +4,7 @@ export default class RenderCache {
 		this.data = {};
 	}
 
-	createKey(viewport) {
+	static CreateKey(viewport) {
 		const { minX, maxX, minY, maxY } = viewport;
 		return `${minX}+${maxX}+${minY}+${maxY}`;
 	}

@@ -3,11 +3,11 @@ export default class RenderPool {
 	constructor(threads, width, height, createRenderer, onRenderStateChanged) {
 		const units = Math.sqrt(threads);
 
-		let w = Math.trunc(width / units);
-		let h = Math.trunc(height / units);
-		let pool = [];
+		const w = Math.trunc(width / units);
+		const h = Math.trunc(height / units);
+		const pool = [];
 
-		for(let row = 0; row < units; row++) {
+		for (let row = 0; row < units; row++) {
 			for (let col = 0; col < units; col++) {
 				pool.push({
 					bounds: {
@@ -37,8 +37,8 @@ export default class RenderPool {
 		const updateRendering = this.updateRenderingState.bind(this);
 		this.pool.forEach((x) => {
 			updateRendering(1);
-			let { bounds, render } = x;
-			let params = {
+			const { bounds, render } = x;
+			const params = {
 				...parameters,
 				width: bounds.width,
 				height: bounds.height,
@@ -69,22 +69,18 @@ export default class RenderPool {
 	}
 
 	getViewportSlice(viewport, bounds) {
-		let { width, height, units, unitWidth, unitHeight } = this.size;
-		let { minX, maxX, minY, maxY } = viewport;
-		let { x, y } = bounds;
-		let vpWidth = maxX - minX;
-		let vpHeight = maxY - minY;
-		let sliceX = minX + (vpWidth / units) * (x / unitWidth);
-		let sliceY = maxY - (vpHeight / units) * (y / unitHeight);
+		const { units, unitWidth, unitHeight } = this.size;
+		const { minX, maxX, minY, maxY } = viewport;
+		const { x, y } = bounds;
+		const vpWidth = maxX - minX;
+		const vpHeight = maxY - minY;
+		const sliceX = minX + ((vpWidth / units) * (x / unitWidth));
+		const sliceY = maxY - ((vpHeight / units) * (y / unitHeight));
 		return {
 			minX: sliceX,
-			maxX: sliceX + vpWidth / units,
-			minY: sliceY - vpHeight / units,
+			maxX: sliceX + (vpWidth / units),
+			minY: sliceY - (vpHeight / units),
 			maxY: sliceY,
 		};
-	}
-
-	dispose() {
-		// Once I figure out why .terminate() isn't working on operatives.
 	}
 }

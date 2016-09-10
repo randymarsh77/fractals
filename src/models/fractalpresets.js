@@ -1,26 +1,26 @@
-import MandelbrotLogic from './logic/mandelbrotlogic'
-import JuliaLogic from './logic/julialogic'
+import MandelbrotLogic from './logic/mandelbrotlogic';
+import JuliaLogic from './logic/julialogic';
 
 export default class FractalPresets {
 
 	static Mandelbrot() {
 		return {
-			name: "Mandelbrot",
-			logic: new MandelbrotLogic(),
+			name: 'Mandelbrot',
+			logic: MandelbrotLogic.Create(),
 		};
 	}
 
 	static Julia() {
 		return {
-			name: "Julia",
-			logic: new JuliaLogic(),
+			name: 'Julia',
+			logic: JuliaLogic.Create(),
 		};
 	}
 
 	static All() {
 		return [
-			Mandlebrot(),
-			Julia(),
+			FractalPresets.Mandelbrot(),
+			FractalPresets.Julia(),
 		];
 	}
 }
