@@ -4,6 +4,7 @@ import CanvasRenderTarget from './components/canvasrendertarget';
 import ControlPanel from './components/controlpanel';
 import IsWorkingIndicator from './components/isworking/isworkingindicator';
 import Fractal from './models/fractal';
+import FractalPresets from './models/fractalpresets';
 import ZoomableViewport from './components/zoomableviewport';
 import './styles.less';
 
@@ -29,8 +30,11 @@ class App extends React.Component {
 			workers: 4,
 		};
 
+		let type = FractalPresets.Mandelbrot();
+
 		this.setState({
-			fractal: new Fractal(fractalParams, this.handleRenderStateChanged.bind(this)),
+			type,
+			fractal: new Fractal(type, fractalParams, this.handleRenderStateChanged.bind(this)),
 			fractalParams,
 			dirty: false,
 			isWorking: false,
@@ -128,6 +132,14 @@ class App extends React.Component {
 		let { fractalParams } = this.state;
 		this.setState({
 			fractalParams: Object.assign(fractalParams, fractalParamsDiff),
+		});
+	}
+
+	handleFractalTypeChanged(newType) {
+		let { fractalParams } = this.state;
+		this.setState({
+			type: newType,
+			fractal: new Fractal(type, fractalParams, this.handleRenderStateChanged.bind(this)),
 		});
 	}
 

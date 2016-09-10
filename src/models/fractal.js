@@ -4,11 +4,12 @@ import RenderPool from './renderpool';
 
 export default class Fractal {
 
-	constructor(params, onRenderStateChanged) {
+	constructor(type, params, onRenderStateChanged) {
+		const { logic } = type;
 		const { resolution, workers } = params;
 		const { width, height } = resolution;
 		this.observers = [];
-		this.createRenderPool = (workers, width, height) => (new RenderPool(workers, width, height, (w, h) => new FractalRenderer().getRenderer(), onRenderStateChanged)),
+		this.createRenderPool = (workers, width, height) => (new RenderPool(workers, width, height, (w, h) => FractalRenderer.CreateRenderer(logic), onRenderStateChanged)),
 		this.updateParameters(params);
 	}
 
