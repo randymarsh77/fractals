@@ -30,7 +30,7 @@ class App extends React.Component {
 			workers: 4,
 		};
 
-		let type = FractalPresets.Mandelbrot();
+		let type = FractalPresets.Julia();
 
 		this.setState({
 			type,

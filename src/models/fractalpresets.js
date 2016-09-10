@@ -1,4 +1,5 @@
 import MandelbrotLogic from './logic/mandelbrotlogic'
+import JuliaLogic from './logic/julialogic'
 
 export default class FractalPresets {
 
@@ -9,9 +10,17 @@ export default class FractalPresets {
 		};
 	}
 
+	static Julia() {
+		return {
+			name: "Julia",
+			logic: new JuliaLogic(),
+		};
+	}
+
 	static All() {
 		return [
 			Mandlebrot(),
+			Julia(),
 		];
 	}
 }
