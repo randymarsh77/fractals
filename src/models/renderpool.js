@@ -33,18 +33,18 @@ export default class RenderPool {
 		};
 	}
 
-	render(parameters, onPartialRender) {
+	render(settings, onPartialRender) {
 		const updateRendering = this.updateRenderingState.bind(this);
 		this.pool.forEach((x) => {
 			updateRendering(1);
 			const { bounds, renderer } = x;
-			const params = {
-				...parameters,
+			const partialSettings = {
+				...settings,
 				width: bounds.width,
 				height: bounds.height,
-				viewport: this.getViewportSlice(parameters.viewport, bounds),
+				viewport: this.getViewportSlice(settings.viewport, bounds),
 			};
-			renderer.render(params)
+			renderer.render(partialSettings)
 				.then((data) => {
 					onPartialRender(data, bounds);
 					updateRendering(-1);

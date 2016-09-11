@@ -24,11 +24,11 @@ export default class ControlPanel extends React.Component {
 	}
 
 	setStateFromProps(props) {
-		const { controlState, fractalParams } = props;
+		const { controlState, renderSettings } = props;
 		const { visible } = controlState;
 		this.setState({
 			visible,
-			...fractalParams,
+			...renderSettings,
 		});
 	}
 
@@ -42,13 +42,13 @@ export default class ControlPanel extends React.Component {
 	}
 
 	onIterationsValueChanged(e) {
-		this.props.onFractalParamsChanged({
+		this.props.onRenderSettingsChanged({
 			iterations: Number(e.target.value),
 		});
 	}
 
 	onWorkersValueChanged(e) {
-		this.props.onFractalParamsChanged({
+		this.props.onRenderSettingsChanged({
 			workers: Math.min(128, Math.max(1, Number(e.target.value))),
 		});
 	}
@@ -63,7 +63,10 @@ export default class ControlPanel extends React.Component {
 				<ModalBody>
 					<h1>Overview</h1>
 					<p>
-						Show or hide this panel with 'c'.
+						<b>Show or hide this panel with 'r'.</b>
+					</p>
+					<p>
+						Show or hide fractal settings with 'f'.
 						Pinch to zoom at the cursor.
 						Drag a box to define a new viewport.
 						Shift+Click+Drag will pan the image.
@@ -73,16 +76,16 @@ export default class ControlPanel extends React.Component {
 					<Form type="horizontal">
 						<FormRow>
 							<FormField width="one-quarter" label="Min X">
-								<FormInput type="number" defaultValue={this.state.viewport.minX} />
+								<FormInput type="number" defaultValue={this.state.viewport.minX} disabled />
 							</FormField>
 							<FormField width="one-quarter" label="Max X">
-								<FormInput type="number" defaultValue={this.state.viewport.maxX} />
+								<FormInput type="number" defaultValue={this.state.viewport.maxX} disabled />
 							</FormField>
 							<FormField width="one-quarter" label="Min Y">
-								<FormInput type="number" defaultValue={this.state.viewport.minY} />
+								<FormInput type="number" defaultValue={this.state.viewport.minY} disabled />
 							</FormField>
 							<FormField width="one-quarter" label="Max Y">
-								<FormInput type="number" defaultValue={this.state.viewport.maxY} />
+								<FormInput type="number" defaultValue={this.state.viewport.maxY} disabled />
 							</FormField>
 						</FormRow>
 						<FormField label="Iterations">

@@ -4,43 +4,46 @@ import RenderPool from './renderpool';
 
 export default class Fractal {
 
-	constructor(type, params, onRenderStateChanged) {
+	constructor(fractalSettings, renderSettings, onRenderStateChanged) {
+		const { type, coloring } = fractalSettings;
 		const { logic } = type;
 		this.observers = [];
 		this.createRenderPool = (workers, width, height) =>
 			(new RenderPool(workers, width, height,
-				() => FractalRenderer.CreateRenderer(logic), onRenderStateChanged));
-		this.updateParameters(params);
+				() => FractalRenderer.CreateRenderer(
+					logic.create({ coloringKey: coloring.key })),
+					onRenderStateChanged));
+		this.updateRenderSettings(renderSettings);
 	}
 
-	updateParameters(params) {
+	updateRenderSettings(settings) {
 		const {
 			resolution: oldResolution,
 			viewport: oldViewport,
 			iterations: oldIterations,
 			workers: oldWorkers,
-		} = (this.parameters || {});
+		} = (this.renderSettings || {});
 		const { width: oldWidth, height: oldHeight } = (oldResolution || {});
-		const newParams = Object.assign((this.parameters || {}), params);
-		const { resolution, viewport, iterations, workers } = newParams;
+		const newSettings = Object.assign((this.renderSettings || {}), settings);
+		const { resolution, viewport, iterations, workers } = newSettings;
 		const { width, height } = resolution;
 
-		let paramsChanged = false;
+		let settingsChanged = false;
 		if (oldWidth !== width || oldHeight !== height || oldWorkers !== workers) {
-			paramsChanged = true;
+			settingsChanged = true;
 			this.renderpool = this.createRenderPool(workers, width, height);
 		}
 
-		paramsChanged = paramsChanged || oldViewport !== viewport || oldIterations !== iterations;
-		this.parameters = newParams;
+		settingsChanged = settingsChanged || oldViewport !== viewport || oldIterations !== iterations;
+		this.renderSettings = newSettings;
 
-		if (paramsChanged) {
+		if (settingsChanged) {
 			this.cache = new RenderCache();
 			this.raiseChanged();
 		}
 	}
 
-	observeParametersChanged(callback) {
+	observeRenderSettingsChanged(callback) {
 		const obj = this;
 		obj.observers.push(callback);
 		return {
@@ -60,8 +63,8 @@ export default class Fractal {
 	}
 
 	render(canvas) {
-		const { cache, renderpool, parameters } = this;
-		const { viewport, iterations } = parameters;
+		const { cache, renderpool, renderSettings } = this;
+		const { viewport, iterations } = renderSettings;
 		const ctx = canvas.getContext('2d');
 
 		const cacheKey = RenderCache.CreateKey(viewport);
