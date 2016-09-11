@@ -1,36 +1,39 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { autobind } from 'core-decorators';
 import CanvasRenderTarget from './components/canvasrendertarget';
 import ControlPanel from './components/controlpanel';
 import IsWorkingIndicator from './components/isworking/isworkingindicator';
 import Fractal from './models/fractal';
 import FractalPresets from './models/fractalpresets';
+import Utility from './models/utility';
 import ZoomableViewport from './components/zoomableviewport';
 import './styles.less';
 
+@autobind
 class App extends React.Component {
 
 	componentWillMount() {
-		let resolution = {
+		const resolution = {
 			width: window.innerWidth,
 			height: window.innerHeight,
 		};
 
-		let viewport = this.adjustViewportForResolution({
+		const viewport = Utility.AdjustViewportForResolution({
 			minX: -2.0,
 			maxX: 2.0,
 			minY: -2.0,
 			maxY: 2.0,
 		}, resolution);
 
-		let fractalParams = {
+		const fractalParams = {
 			resolution,
 			viewport,
 			iterations: 100,
 			workers: 4,
 		};
 
-		let type = FractalPresets.Julia();
+		const type = FractalPresets.Julia();
 
 		this.setState({
 			type,
@@ -46,7 +49,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		window.addEventListener('resize', this.handleResize.bind(this));
-		window.addEventListener("keyup", this.handleKeyUp.bind(this));
+		window.addEventListener('keyup', this.handleKeyUp.bind(this));
 	}
 
 	componentWillUnmount() {
@@ -59,8 +62,8 @@ class App extends React.Component {
 		fractal.updateParameters(fractalParams);
 	}
 
-	handleResize(e) {
-		let { dirty } = this.state;
+	handleResize() {
+		const { dirty } = this.state;
 		if (dirty) {
 			return;
 		}
@@ -70,13 +73,13 @@ class App extends React.Component {
 		});
 
 		setTimeout(() => {
-			let resolution = {
+			const resolution = {
 				width: window.innerWidth,
 				height: window.innerHeight,
 			};
 
-			let { fractalParams: oldFractalParams } = this.state;
-			let { viewport: oldViewport } = oldFractalParams;
+			const { fractalParams: oldFractalParams } = this.state;
+			const { viewport: oldViewport } = oldFractalParams;
 
 			this.setState({
 				dirty: false,
@@ -86,36 +89,10 @@ class App extends React.Component {
 						width: window.innerWidth,
 						height: window.innerHeight,
 					},
-					viewport: this.adjustViewportForResolution(oldViewport, resolution),
+					viewport: Utility.AdjustViewportForResolution(oldViewport, resolution),
 				},
 			});
 		}, 1000);
-	}
-
-	adjustViewportForResolution(viewport, resolution) {
-		const { width, height } = resolution;
-		const vpWidth = viewport.maxX - viewport.minX;
-		const vpHeight = viewport.maxY - viewport.minY;
-
-		let resolutionRatio = width / height;
-		let vpRatio = vpWidth / vpHeight;
-
-		let scaleFactor = resolutionRatio / vpRatio;
-
-		let newWidth = vpWidth * scaleFactor;
-		let xCenter = viewport.minX + vpWidth / 2;
-
-		let newHeight = vpHeight;
-		let yCenter = viewport.minY + vpHeight / 2;
-
-		let adjusted =  {
-			minX: xCenter - newWidth / 2,
-			maxX: xCenter + newWidth / 2,
-			minY: yCenter - newHeight / 2,
-			maxY: yCenter + newHeight / 2,
-		};
-
-		return adjusted;
 	}
 
 	setViewport(viewport) {
@@ -123,28 +100,28 @@ class App extends React.Component {
 		this.setState({
 			fractalParams: {
 				...fractalParams,
-				viewport: this.adjustViewportForResolution(viewport, fractalParams.resolution),
+				viewport: Utility.AdjustViewportForResolution(viewport, fractalParams.resolution),
 			},
 		});
 	}
 
 	handleFractalParamsChanged(fractalParamsDiff) {
-		let { fractalParams } = this.state;
+		const { fractalParams } = this.state;
 		this.setState({
 			fractalParams: Object.assign(fractalParams, fractalParamsDiff),
 		});
 	}
 
 	handleFractalTypeChanged(newType) {
-		let { fractalParams } = this.state;
+		const { fractalParams } = this.state;
 		this.setState({
 			type: newType,
-			fractal: new Fractal(type, fractalParams, this.handleRenderStateChanged.bind(this)),
+			fractal: new Fractal(newType, fractalParams, this.handleRenderStateChanged.bind(this)),
 		});
 	}
 
 	handleControlStateChanged(controlStateDiff) {
-		let { controlState } = this.state;
+		const { controlState } = this.state;
 		this.setState({
 			controlState: Object.assign(controlState, controlStateDiff),
 		});
@@ -159,7 +136,7 @@ class App extends React.Component {
 
 	handleKeyUp(e) {
 		if (e.key === 'c') {
-			let { controlState } = this.state;
+			const { controlState } = this.state;
 			controlState.visible = !controlState.visible;
 			this.setState({
 				controlState,
@@ -167,21 +144,26 @@ class App extends React.Component {
 		}
 	}
 
-	render () {
+	render() {
 		return (
 			<div>
-				<ZoomableViewport onViewportChanged={this.setViewport.bind(this)} viewport={this.state.fractalParams.viewport} resolution={this.state.fractalParams.resolution}>
-					<CanvasRenderTarget resolution={this.state.fractalParams.resolution} dataSource={this.state.fractal} />
+				<ZoomableViewport
+					onViewportChanged={this.setViewport}
+					viewport={this.state.fractalParams.viewport}
+					resolution={this.state.fractalParams.resolution}>
+					<CanvasRenderTarget
+						resolution={this.state.fractalParams.resolution}
+						dataSource={this.state.fractal} />
 				</ZoomableViewport>
 				{ this.state.isWorking ? <IsWorkingIndicator /> : null }
 				<ControlPanel
 					controlState={this.state.controlState}
-					onControlStateChanged={this.handleControlStateChanged.bind(this)}
+					onControlStateChanged={this.handleControlStateChanged}
 					fractalParams={this.state.fractalParams}
-					onFractalParamsChanged={this.handleFractalParamsChanged.bind(this)} />
+					onFractalParamsChanged={this.handleFractalParamsChanged} />
 			</div>
 		);
-  }
+	}
 }
 
 render((

@@ -6,9 +6,9 @@ var APP_DIR = path.resolve(__dirname, 'src');
 
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, 'src/index.html'),
-    filename: 'index.html',
-    inject: 'body'
+		template: path.resolve(__dirname, 'src/index.html'),
+		filename: 'index.html',
+		inject: 'body'
 });
 
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
@@ -20,29 +20,35 @@ var MinifyPlugin = new webpack.optimize.UglifyJsPlugin({
 });
 
 var config = {
-  entry: APP_DIR + '/index.jsx',
+	entry: APP_DIR + '/index.jsx',
 	resolve: {
 		extensions: [ '', '.html', '.js', '.jsx', '.less' ]
 	},
-  output: {
-    path: BUILD_DIR,
-    filename: 'index.js'
-  },
-  module : {
-    loaders : [
-      {
-        test : /\.jsx?/,
-        include : APP_DIR,
-        loader : 'babel'
-      },
+	output: {
+		path: BUILD_DIR,
+		filename: 'index.js'
+	},
+	module : {
+		loaders : [
 			{
-        test: /\.less$/,
+				test : /\.jsx?/,
+				include : APP_DIR,
+				loader : 'babel',
+				query : {
+					presets : [ 'es2015', 'react', 'stage-1' ],
+					plugins: [
+						'transform-decorators-legacy',
+					],
+				},
+			},
+			{
+				test: /\.less$/,
 				include : APP_DIR,
 				loader: ExtractTextPlugin.extract("style?sourceMap", "css?sourceMap!autoprefixer?browsers=last 2 version!less")
-      }
-    ]
-  },
-  plugins: [
+			}
+		]
+	},
+	plugins: [
 		HtmlWebpackPluginConfig,
 		StyleTextPluginConfig,
 		MinifyPlugin,

@@ -1,9 +1,11 @@
 import React from 'react';
+import { autobind } from 'core-decorators';
 
+@autobind
 export default class ZoomableViewport extends React.Component {
 
 	componentWillMount() {
-		let { resolution, viewport } = this.props;
+		const { resolution, viewport } = this.props;
 		this.setState({
 			resolution,
 			viewport,
@@ -12,7 +14,7 @@ export default class ZoomableViewport extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		let { resolution, viewport } = nextProps;
+		const { resolution, viewport } = nextProps;
 		this.setState({
 			resolution,
 			viewport,
@@ -21,10 +23,6 @@ export default class ZoomableViewport extends React.Component {
 
 	shouldComponentUpdate(nextProps, nextState) {
 		return nextState.scale === 1.0;
-	}
-
-	isNegative(n) {
-		return ((n = +n) || 1 / n) < 0;
 	}
 
 	handleMouseDown(e) {
@@ -40,7 +38,7 @@ export default class ZoomableViewport extends React.Component {
 					y: e.pageY,
 				},
 				style: {
-					left:e.pageX,
+					left: e.pageX,
 					top: e.pageY,
 					width: 0,
 					height: 0,
@@ -68,7 +66,7 @@ export default class ZoomableViewport extends React.Component {
 		});
 	}
 
-	handleMouseUp(e) {
+	handleMouseUp() {
 		const { dragState, viewport, resolution } = this.state;
 		if (!dragState) {
 			return;
@@ -81,7 +79,7 @@ export default class ZoomableViewport extends React.Component {
 		const { left, top, width, height } = dragState.style;
 		const { minX, minY, maxX, maxY } = viewport;
 		const newWidth = (maxX - minX) * (width / resolution.width);
-		const newHeight = (maxY - minY) * ( height / resolution.height);
+		const newHeight = (maxY - minY) * (height / resolution.height);
 
 		const newMinX = minX + ((left / resolution.width) * (maxX - minX));
 		const newMaxY = maxY - ((top / resolution.height) * (maxY - minY));
@@ -95,12 +93,12 @@ export default class ZoomableViewport extends React.Component {
 	}
 
 	handleMouseWheel(e) {
-		let ZOOM_STEP = .01;
+		const ZOOM_STEP = 0.01;
 		e.preventDefault();
 
 		let { scale } = this.state;
-		let shouldRenderSoon = scale === 1.0;
-		let zoomingOut = !this.isNegative(e.deltaX) || !this.isNegative(e.deltaY);
+		const shouldRenderSoon = scale === 1.0;
+		const zoomingOut = e.deltaX > 0 || e.deltaY > 0;
 		if (zoomingOut) {
 			scale += ZOOM_STEP;
 		} else {
@@ -112,7 +110,7 @@ export default class ZoomableViewport extends React.Component {
 		});
 
 		if (shouldRenderSoon) {
-			const containerRect = this.refs.container.getBoundingClientRect();
+			const containerRect = this.container.getBoundingClientRect();
 			const zoomAtPointFromTopLeft = {
 				x: e.pageX - containerRect.left,
 				y: e.pageY - containerRect.top,
@@ -122,23 +120,23 @@ export default class ZoomableViewport extends React.Component {
 					return;
 				}
 
-				let { scale, resolution, viewport } = this.state;
-				let { width, height } = resolution;
-				let { minX, minY, maxX, maxY } = viewport;
+				const { scale: finalScale, resolution, viewport } = this.state;
+				const { width, height } = resolution;
+				const { minX, minY, maxX, maxY } = viewport;
 
-				let oldWidth = maxX - minX;
-				let oldHeight = maxY - minY;
-				let newWidth = (maxX - minX) * scale;
-				let newHeight = (maxY - minY) * scale;
+				const oldWidth = maxX - minX;
+				const oldHeight = maxY - minY;
+				const newWidth = (maxX - minX) * finalScale;
+				const newHeight = (maxY - minY) * finalScale;
 
-				let relativeZoomX = zoomAtPointFromTopLeft.x / width;
-				let relativeZoomY = zoomAtPointFromTopLeft.y / height;
+				const relativeZoomX = zoomAtPointFromTopLeft.x / width;
+				const relativeZoomY = zoomAtPointFromTopLeft.y / height;
 
-				let absoluteZoomX = minX + (relativeZoomX * oldWidth);
-				let absoluteZoomY = maxY - (relativeZoomY * oldHeight);
+				const absoluteZoomX = minX + (relativeZoomX * oldWidth);
+				const absoluteZoomY = maxY - (relativeZoomY * oldHeight);
 
-				let newMinX = absoluteZoomX - relativeZoomX * newWidth;
-				let newMaxY = absoluteZoomY + relativeZoomY * newHeight;
+				const newMinX = absoluteZoomX - (relativeZoomX * newWidth);
+				const newMaxY = absoluteZoomY + (relativeZoomY * newHeight);
 
 				this.setState({
 					scale: 1.0,
@@ -150,21 +148,20 @@ export default class ZoomableViewport extends React.Component {
 					maxX: newMinX + newWidth,
 					maxY: newMaxY,
 				});
-
 			}, 1000);
 		}
 	}
 
-	render () {
+	render() {
 		const { dragState } = this.state;
 		return (
 			<div
-				ref="container"
+				ref={(x) => { this.container = x; }}
 				className="fill"
-				onWheel={this.handleMouseWheel.bind(this)}
-				onMouseDown={this.handleMouseDown.bind(this)}
-				onMouseMove={this.handleMouseMove.bind(this)}
-				onMouseUp={this.handleMouseUp.bind(this)}>
+				onWheel={this.handleMouseWheel}
+				onMouseDown={this.handleMouseDown}
+				onMouseMove={this.handleMouseMove}
+				onMouseUp={this.handleMouseUp}>
 				{this.props.children}
 				{ dragState ? <div className="dragBox" style={dragState.style} /> : null }
 			</div>

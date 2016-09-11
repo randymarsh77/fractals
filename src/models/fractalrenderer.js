@@ -1,12 +1,13 @@
-import operative from 'operative';
+import operative from 'operative'; // eslint-disable-line no-unused-vars
 
 export default class FractalRenderer {
 
 	static CreateRenderer(logic) {
 		const { getColorForPoint } = logic;
-		return operative({
+		return window.operative({
 			getColorForPoint,
 			render: (parameters) => {
+				const getColorForPoint = self.getColorForPoint; // eslint-disable-line no-shadow
 				const getPointForPixel = (n, width, height, viewport) => {
 					const { minX, minY, maxX, maxY } = viewport;
 					const ax = Math.ceil(n % width);
@@ -18,7 +19,6 @@ export default class FractalRenderer {
 				};
 
 				const { viewport, width, height, iterations } = parameters;
-
 				const data = new Array(width * height * 4);
 				for (let row = 0; row < height; row++) {
 					for (let column = 0; column < width; column++) {
@@ -35,6 +35,6 @@ export default class FractalRenderer {
 
 				return data;
 			},
-		}).render;
+		});
 	}
 }

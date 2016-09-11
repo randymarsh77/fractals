@@ -16,7 +16,7 @@ export default class RenderPool {
 						width: w,
 						height: h,
 					},
-					render: createRenderer(),
+					renderer: createRenderer(),
 				});
 			}
 		}
@@ -37,14 +37,14 @@ export default class RenderPool {
 		const updateRendering = this.updateRenderingState.bind(this);
 		this.pool.forEach((x) => {
 			updateRendering(1);
-			const { bounds, render } = x;
+			const { bounds, renderer } = x;
 			const params = {
 				...parameters,
 				width: bounds.width,
 				height: bounds.height,
 				viewport: this.getViewportSlice(parameters.viewport, bounds),
 			};
-			render(params)
+			renderer.render(params)
 				.then((data) => {
 					onPartialRender(data, bounds);
 					updateRendering(-1);

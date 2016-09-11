@@ -1,7 +1,18 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'elemental';
-import { Form, FormRow, FormField, FormInput } from 'elemental';
+import { autobind } from 'core-decorators';
+import {
+	Modal,
+	ModalHeader,
+	ModalBody,
+	ModalFooter,
+	Button,
+	Form,
+	FormRow,
+	FormField,
+	FormInput,
+} from 'elemental';
 
+@autobind
 export default class ControlPanel extends React.Component {
 
 	componentWillMount() {
@@ -13,7 +24,7 @@ export default class ControlPanel extends React.Component {
 	}
 
 	setStateFromProps(props) {
-		const { controlState, fractalParams } = this.props;
+		const { controlState, fractalParams } = props;
 		const { visible } = controlState;
 		this.setState({
 			visible,
@@ -23,8 +34,8 @@ export default class ControlPanel extends React.Component {
 
 	toggleVisible() {
 		const { visible } = this.state;
-		let newVisible = !visible;
-		let newState = {
+		const newVisible = !visible;
+		const newState = {
 			visible: newVisible,
 		};
 		this.props.onControlStateChanged(newState);
@@ -45,36 +56,51 @@ export default class ControlPanel extends React.Component {
 	render() {
 		return (
 			<Modal isOpen={this.state.visible} backdropClosesModal>
-				<ModalHeader text="Explore Fractals" showCloseButton onClose={this.toggleVisible.bind(this)} />
+				<ModalHeader
+					text="Explore Fractals"
+					showCloseButton
+					onClose={this.toggleVisible} />
 				<ModalBody>
 					<h1>Overview</h1>
-					<p>Show or hide this panel with 'c'. Pinch to zoom at the cursor. Drag a box to define a new viewport. Shift+Click+Drag will pan the image. Pro tip: fullscreen your browser window.</p>
+					<p>
+						Show or hide this panel with 'c'.
+						Pinch to zoom at the cursor.
+						Drag a box to define a new viewport.
+						Shift+Click+Drag will pan the image.
+						Pro tip: fullscreen your browser window.
+					</p>
 					<h1>Settings</h1>
-						<Form type="horizontal">
-							<FormRow>
-								<FormField width="one-quarter" label="Min X">
-									<FormInput type="number" defaultValue={this.state.viewport.minX} />
-								</FormField>
-								<FormField width="one-quarter" label="Max X">
-									<FormInput type="number" defaultValue={this.state.viewport.maxX} />
-								</FormField>
-								<FormField width="one-quarter" label="Min Y">
-									<FormInput type="number" defaultValue={this.state.viewport.minY} />
-								</FormField>
-								<FormField width="one-quarter" label="Max Y">
-									<FormInput type="number" defaultValue={this.state.viewport.maxY} />
-								</FormField>
-							</FormRow>
-							<FormField label="Iterations">
-								<FormInput type="number" defaultValue={this.state.iterations} onChange={this.onIterationsValueChanged.bind(this)} />
+					<Form type="horizontal">
+						<FormRow>
+							<FormField width="one-quarter" label="Min X">
+								<FormInput type="number" defaultValue={this.state.viewport.minX} />
 							</FormField>
-							<FormField label="Background Workers">
-								<FormInput type="number" defaultValue={this.state.workers} onChange={this.onWorkersValueChanged.bind(this)} />
+							<FormField width="one-quarter" label="Max X">
+								<FormInput type="number" defaultValue={this.state.viewport.maxX} />
 							</FormField>
-							<FormField offsetAbsentLabel>
-								<Button submit>Apply</Button>
+							<FormField width="one-quarter" label="Min Y">
+								<FormInput type="number" defaultValue={this.state.viewport.minY} />
 							</FormField>
-						</Form>
+							<FormField width="one-quarter" label="Max Y">
+								<FormInput type="number" defaultValue={this.state.viewport.maxY} />
+							</FormField>
+						</FormRow>
+						<FormField label="Iterations">
+							<FormInput
+								type="number"
+								defaultValue={this.state.iterations}
+								onChange={this.onIterationsValueChanged} />
+						</FormField>
+						<FormField label="Background Workers">
+							<FormInput
+								type="number"
+								defaultValue={this.state.workers}
+								onChange={this.onWorkersValueChanged} />
+						</FormField>
+						<FormField offsetAbsentLabel>
+							<Button submit>Apply</Button>
+						</FormField>
+					</Form>
 				</ModalBody>
 				<ModalFooter>
 					<Button type="primary">Got it. Show me the fractal!</Button>

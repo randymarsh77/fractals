@@ -6,31 +6,35 @@ export default class CanvasRenderTarget extends React.Component {
 		this.setStateFromProps(this.props);
 	}
 
+	componentDidMount() {
+		this.updateCanvas();
+		const { dataSource } = this.state;
+		dataSource.render(this.canvas);
+
+		const subscription = this.updateSubscription(this.canvas, undefined, dataSource);
+		this.setState({
+			subscription,
+		});
+	}
+
 	componentWillReceiveProps(nextProps) {
 		this.setStateFromProps(nextProps);
 	}
 
+	componentDidUpdate() {
+		this.updateCanvas();
+	}
+
 	setStateFromProps(props) {
-		let { dataSource: oldDataSource } = (this.state || {});
-		let { resolution, dataSource } = props;
-		let { width, height } = resolution;
-		const subscription = this.updateSubscription(this.refs.canvas, oldDataSource, dataSource);
+		const { dataSource: oldDataSource } = (this.state || {});
+		const { resolution, dataSource } = props;
+		const { width, height } = resolution;
+		const subscription = this.updateSubscription(this.canvas, oldDataSource, dataSource);
 		this.setState({
 			width,
 			height,
 			subscription,
 			dataSource,
-		});
-	}
-
-	componentDidMount() {
-		this.updateCanvas();
-		const { dataSource } = this.state;
-		dataSource.render(this.refs.canvas);
-
-		const subscription = this.updateSubscription(this.refs.canvas, undefined, dataSource);
-		this.setState({
-			subscription,
 		});
 	}
 
@@ -53,21 +57,16 @@ export default class CanvasRenderTarget extends React.Component {
 		return undefined;
 	}
 
-	componentDidUpdate() {
-		this.updateCanvas();
-	}
-
 	updateCanvas() {
-
 		const { width, height } = this.state;
-		let canvas = this.refs.canvas;
-		if (canvas.width !== width || canvas.height != height) {
+		const canvas = this.canvas;
+		if (canvas.width !== width || canvas.height !== height) {
 			canvas.width = width;
 			canvas.height = height;
 		}
 	}
 
-	render () {
-		return <canvas ref="canvas" className="fill" />;
+	render() {
+		return <canvas ref={(x) => { this.canvas = x; }} className="fill" />;
 	}
 }
