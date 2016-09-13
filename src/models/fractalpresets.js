@@ -32,7 +32,7 @@ export default class FractalPresets {
 
 	static SmoothColoring() {
 		return {
-			label: 'Smooth Grayscale Interpolation"',
+			label: 'Smooth Grayscale Interpolation',
 			key: 'smooth',
 		};
 	}
