@@ -7,7 +7,6 @@ import {
 	ModalFooter,
 	Button,
 	Form,
-	FormField,
 	FormSelect,
 } from 'elemental';
 import FractalPresets from './../models/fractalpresets';
@@ -100,9 +99,6 @@ export default class FractalSettings extends React.Component {
 							label="Color"
 							options={this.state.coloringOptions}
 							onChange={this.handleColoringMethodChanged} />
-						<FormField offsetAbsentLabel>
-							<Button submit>Apply</Button>
-						</FormField>
 					</Form>
 				</ModalBody>
 				<ModalFooter>

@@ -100,9 +100,6 @@ export default class ControlPanel extends React.Component {
 								defaultValue={this.state.workers}
 								onChange={this.onWorkersValueChanged} />
 						</FormField>
-						<FormField offsetAbsentLabel>
-							<Button submit>Apply</Button>
-						</FormField>
 					</Form>
 				</ModalBody>
 				<ModalFooter>
