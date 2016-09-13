@@ -20,12 +20,7 @@ class App extends React.Component {
 			height: window.innerHeight,
 		};
 
-		const viewport = Utility.AdjustViewportForResolution({
-			minX: -2.0,
-			maxX: 2.0,
-			minY: -2.0,
-			maxY: 2.0,
-		}, resolution);
+		const viewport = Utility.AdjustViewportForResolution(Utility.DefaultViewport(), resolution);
 
 		const renderSettings = {
 			resolution,
@@ -121,10 +116,17 @@ class App extends React.Component {
 
 	handleFractalSettingsChanged(diff) {
 		const { fractalSettings: oldFractalSettings, renderSettings } = this.state;
+		const { resolution } = renderSettings;
 		const fractalSettings = Object.assign(oldFractalSettings, diff);
+		const viewport = Utility.AdjustViewportForResolution(Utility.DefaultViewport(), resolution);
+		const newRenderSettings = {
+			...renderSettings,
+			viewport,
+		};
 		this.setState({
+			renderSettings: newRenderSettings,
 			fractalSettings,
-			fractal: new Fractal(fractalSettings, renderSettings, this.handleRenderStateChanged),
+			fractal: new Fractal(fractalSettings, newRenderSettings, this.handleRenderStateChanged),
 		});
 	}
 

@@ -25,4 +25,13 @@ export default class Utility {
 
 		return adjusted;
 	}
+
+	static DefaultViewport() {
+		return {
+			minX: -2.0,
+			maxX: 2.0,
+			minY: -2.0,
+			maxY: 2.0,
+		};
+	}
 }
