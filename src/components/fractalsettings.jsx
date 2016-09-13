@@ -93,10 +93,12 @@ export default class FractalSettings extends React.Component {
 					<Form type="horizontal">
 						<FormSelect
 							label="Type"
+							firstOption="Select"
 							options={this.state.typeOptions}
 							onChange={this.handleFractalTypeChanged} />
 						<FormSelect
 							label="Color"
+							firstOption="Select"
 							options={this.state.coloringOptions}
 							onChange={this.handleColoringMethodChanged} />
 					</Form>
